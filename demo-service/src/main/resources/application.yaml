@@ -1,3 +1,30 @@
 spring:
   application:
     name: demo-service
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      unstableService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 500ms
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        recordExceptions:
+          - java.lang.Exception
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    enable:
+      all: true
+    distribution:
+      percentiles-histogram:
+        resilience4j.circuitbreaker.calls: true
+      percentiles:
+        resilience4j.circuitbreaker.calls: 0.95,0.99
